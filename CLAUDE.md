@@ -75,6 +75,16 @@
 
 ## 規約
 
+- **ディレクトリ構成**: type-based + ドメインコア隔離。`pages/`・`features/` は作らない（1 画面・ルーターなしのため）。深いネストは避ける（2〜3 階層まで）。
+  ```
+  src/
+    components/   React UI 部品（Dropzone, PianoRoll, Player, ExportButton …）
+    hooks/        カスタムフック（useAudioFile, useTranscription …）
+    audio/        ドメイン中核（React 非依存）: decode.ts, transcribe.ts, synth.ts, midi.ts
+    types.ts      共有型（Note など。増えたら types/ に昇格）
+    App.tsx / main.tsx / index.css
+  ```
+  React の UI と音声処理コア（Web Audio / 採譜 / MIDI）を分ける。「2 つ以上で使うようになったら共有層へ昇格」（rule of three）。機能が育ったら `components/` の一部を `features/` に昇格して良い。
 - **フォーマット**: インデント 2 スペース、Biome に従う。手で整形せず保存時整形か `biome check --write` に任せる。import の並びも Biome の organizeImports に任せ、手動で並べ替えない。
 - **インポートエイリアス**: `@/*` → `src/*`（`tsconfig` と `vite.config.ts` の `paths`/`resolve.alias` を揃える）。
 - **重い処理は分離**: 採譜は重い。チャンク処理＋進捗バー＋Web Worker 化を検討（メインスレッドを固めない）。

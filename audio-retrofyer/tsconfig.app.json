@@ -15,6 +15,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Path alias: @/* → src/*（vite.config.ts の resolve.alias と揃える）
+       baseUrl は TS 7 で廃止予定なので使わず、paths を tsconfig 基準の相対で解決する。 */
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
