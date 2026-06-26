@@ -1,0 +1,5 @@
+allowBuilds:
+  # core-js の postinstall は寄付バナーを出すだけで不要なため、ビルドを許可しない。
+  core-js: false
+  # esbuild はネイティブバイナリ設置の postinstall が必須なので許可する。
+  esbuild: true

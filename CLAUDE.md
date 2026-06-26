@@ -35,7 +35,7 @@
 
 | 役割 | 採用/候補 | メモ |
 | --- | --- | --- |
-| ビルド/SPA | **Vite + TypeScript（strict）** | 静的出力 |
+| ビルド/SPA | **Vite 7 + TypeScript（strict）** | 静的出力。**Vite 8 は不可**（Rolldown の dev import 解析が basic-pitch/tfjs を壊す。`docs/notes/web-audio.md` 参照） |
 | Lint/Format | **Biome 2** | ESLint・Prettier は使わない |
 <!-- メモ: Vite 公式テンプレは現在 lint に oxlint を採用。本プロジェクトは Biome 一本に統一したが、
      oxlint（Oxc）は急成長中で Vite も推し始めている。lint 速度が問題化したら oxlint(lint) + Biome(format)

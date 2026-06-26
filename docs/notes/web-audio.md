@@ -47,4 +47,26 @@ const audioBuffer = await ctx.decodeAudioData(arrayBuffer); // ② 解凍して�
 `getChannelData()` で取れる `Float32Array`（波形）は、次のステップで使う:
 
 - **波形描画**: 値を縦軸、時間（インデックス）を横軸に canvas へ。
-- **採譜**: basic-pitch に AudioBuffer を渡す（内部でモノラル化・22050Hz へリサンプルされる）。
+- **採譜**: basic-pitch に AudioBuffer を渡す（22050Hz・モノラルへ自前でリサンプルしてから。`src/audio/transcribe.ts`）。
+
+## 6. ハマりどころ: Vite 8 で basic-pitch が壊れる（→ Vite 7 固定）
+
+**症状**: basic-pitch 導入後、`pnpm dev` で画面が真っ白。コンソールに
+`@spotify_basic-pitch.js:XXXXX Uncaught SyntaxError: Unexpected token '('`。本番ビルド(`pnpm build`)は通るのに dev だけ落ちる。
+
+**真因**: `@tensorflow/tfjs` の `HashTable` クラスに `async import(keys, values) {}` という **`import` という名のメソッド**がある。
+**Vite 8（Rolldown）の dev 配信時 import 解析（es-module-lexer）が、この `import(` を「動的 import 呼び出し」と誤検出**し、配信するファイルにこう注入して構文を壊す:
+
+```js
+// 元: async import(keys, values) {
+// 配信時に壊れる ↓
+async import(__vite__injectQuery(keys, 'import'), values) {
+```
+
+ディスク上のファイルは正常（`node --check` 通過）。**dev サーバが配信時に変換した版だけ**が壊れる、というのが切り分けの鍵だった。本番ビルドはフルパーサ＋minify の別経路なので誤検出しない。
+
+**対処**: **Vite を 7 系に固定**（esbuild ベースの最適化器は誤検出しない）。
+- `package.json`: `vite ^7.x` / `@vitejs/plugin-react ^5`（v6 は Vite 8 専用 peer）
+- `vite.config.ts`: `optimizeDeps.include: ["@spotify/basic-pitch"]`（CJS・拡張子なし import を ESM 化させるため。tfjs は basic-pitch の依存なので直接 include しない＝解決不可で失敗する）
+
+**将来 Vite 8 に上げたいとき**: この `import` メソッド誤検出が修正されたかを先に確認すること。
