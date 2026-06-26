@@ -12,6 +12,14 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
   // ドラッグ中かどうか。見た目（枠線・背景）の切り替えに使うだけの状態。
   const [isDragOver, setIsDragOver] = useState(false);
 
+  function handleFile(file: File) {
+    if (!file.type.startsWith("audio/")) {
+      alert("音声ファイル（mp3 / wav）を選択してください。");
+      return;
+    }
+    onFile(file);
+  }
+
   function handleDrop(event: DragEvent<HTMLLabelElement>) {
     event.preventDefault(); // ブラウザが既定でファイルを開いてしまうのを抑制。
     setIsDragOver(false);
@@ -19,7 +27,7 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
     if (disabled) return;
 
     const file = event.dataTransfer.files[0]; // 複数ドロップされても先頭だけ扱う。
-    if (file) onFile(file);
+    if (file) handleFile(file);
   }
 
   return (
@@ -29,7 +37,10 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
         event.preventDefault(); // これが無いと drop イベントが発火しない（ブラウザ仕様）。
         if (!disabled) setIsDragOver(true);
       }}
-      onDragLeave={() => setIsDragOver(false)}
+      onDragLeave={(event) => {
+        if (event.currentTarget.contains(event.relatedTarget as Node)) return; // 子要素に移動しただけなら無視
+        setIsDragOver(false);
+      }}
       onDrop={handleDrop}
       // cn() で「基本クラス + 状態クラス」を合成。モバイル基準で書き、sm: 以上で余白を広げる。
       className={cn(
@@ -56,7 +67,7 @@ export function DropZone({ onFile, disabled }: DropZoneProps) {
         className="sr-only" // 画面上には表示せず、ラベルのクリックで開く。
         onChange={(event) => {
           const file = event.target.files?.[0];
-          if (file) onFile(file);
+          if (file) handleFile(file);
           // 同じファイルをもう一度選んでも onChange が発火するよう値をリセット。
           event.target.value = "";
         }}

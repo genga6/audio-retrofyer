@@ -95,9 +95,10 @@ React のコンポーネントもこの層に対応させる: `<Dropzone>` / `<T
   - [x] Step 1a: ファイル入力 → `decodeAudioData` → 中身（長さ/サンプルレート/ch数）表示
   - [x] Step 1b: 波形表示（`AudioBuffer.getChannelData` を canvas に）
   - [x] Step 2: 採譜（`@spotify/basic-pitch`）→ `Note[]`（スモークテストで動作確認。Vite 7 固定が必要だった）
-  - [ ] Step 3: ピアノロール表示（canvas）← 今ここ
-  - [ ] Step 4: 1 音色で再生（sf2 / synth）
+  - [x] Step 3: ピアノロール表示（canvas）※粗い版。**楽譜風の整形は TODO**
+  - [ ] Step 4: 再生 ← 今ここ。まず Web Audio オシレータ（依存ゼロ）で音色変換を検証 → 後で sf2
   - [ ] Web Worker 化: 採譜をメインスレッドから分離（現状 2分の曲で UI が固まる）。進捗バーは実装済みなので、処理だけ Worker へ移す
+  - [ ] ピアノロールを「楽譜風」に: 鍵盤ガター＋オクターブ線＋音名ラベル＋時間グリッド（現状は基準が無く読めない）
 - [ ] 音色切り替え UI（sf2 を複数同梱 → ドロップダウン）
 - [ ] MIDI エクスポート（`@tonejs/midi`）
 - [ ] タブ音声キャプチャ入力（出口は共通なので入力差し替えだけ）

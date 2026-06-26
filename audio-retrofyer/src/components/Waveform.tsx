@@ -9,6 +9,7 @@ type WaveformProps = {
 export function Waveform({ buffer, height = 96 }: WaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // NOTE: canvasの定型処理は PianoRoll.tsx と同じなので、共通化できるかも。
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return; // まだ canvas が描画されていない場合は何もしない
